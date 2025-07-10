@@ -14,10 +14,20 @@ jobs:
           cd vcpkg
           ${{ matrix.os == 'windows-latest' && 'bootstrap-vcpkg.bat' || './bootstrap-vcpkg.sh' }}
       - name: Install Dependencies
-        run: ./vcpkg/vcpkg install spdlog gtest taskflow tracy glm range-v3
+        run: |
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            ./vcpkg/vcpkg.exe install spdlog gtest taskflow tracy glm range-v3
+          else
+            ./vcpkg/vcpkg install spdlog gtest taskflow tracy glm range-v3
+          fi
+        shell: bash
+      - name: Install Doxygen
+        run: ${{ matrix.os == 'windows-latest' && 'choco install doxygen.install' || 'sudo apt-get install -y doxygen' }}
       - name: Configure
         run: cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake
       - name: Build
         run: cmake --build build --config Debug
       - name: Test
         run: ctest --test-dir build -C Debug
+      - name: Generate Documentation
+        run: doxygen Doxyfile
