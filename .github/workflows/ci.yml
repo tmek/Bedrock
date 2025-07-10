@@ -1,0 +1,23 @@
+name: Bedrock CI
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git
+          cd vcpkg
+          ${{ matrix.os == 'windows-latest' && 'bootstrap-vcpkg.bat' || './bootstrap-vcpkg.sh' }}
+      - name: Install Dependencies
+        run: ./vcpkg/vcpkg install spdlog gtest taskflow tracy glm range-v3
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake
+      - name: Build
+        run: cmake --build build --config Debug
+      - name: Test
+        run: ctest --test-dir build -C Debug

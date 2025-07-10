@@ -39,3 +39,32 @@
 
 # debug information files
 *.dwo
+
+
+# Build artifacts
+build/
+*.o
+*.exe
+*.so
+*.dll
+*.a
+*.lib
+*.obj
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+
+# vcpkg
+vcpkg/
+
+# IDE
+.vscode/
+.idea/
+*.sln
+*.vcxproj
+
+# Doxygen
+docs/html/
+docs/latex/
